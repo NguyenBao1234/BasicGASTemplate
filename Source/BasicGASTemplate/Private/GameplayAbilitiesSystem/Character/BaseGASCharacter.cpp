@@ -21,6 +21,24 @@ void ABaseGASCharacter::BeginPlay()
 	
 }
 
+void ABaseGASCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+	if (AbilitySystemComp != nullptr)
+	{
+		AbilitySystemComp->InitAbilityActorInfo(this,this);
+	}
+}
+
+void ABaseGASCharacter::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+	if (AbilitySystemComp != nullptr)
+	{
+		AbilitySystemComp->InitAbilityActorInfo(this,this);
+	}
+}
+
 // Called every frame
 void ABaseGASCharacter::Tick(float DeltaTime)
 {

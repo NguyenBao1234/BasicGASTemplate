@@ -10,7 +10,7 @@
 #include "BaseGASCharacter.generated.h"
 
 UCLASS()
-class BASICGASTEMPLATE_API ABaseGASCharacter : public ACharacter, IAbilitySystemInterface
+class BASICGASTEMPLATE_API ABaseGASCharacter : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
@@ -20,12 +20,15 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Abilities")
 		UAbilitySystemComponent* AbilitySystemComp;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Abilities")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attributes|Abilities")
 		EGameplayEffectReplicationMode ASReplicationMode = EGameplayEffectReplicationMode::Mixed;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	virtual void PossessedBy(AController* NewController) override;
+	virtual void OnRep_PlayerState() override;
 
 public:	
 	// Called every frame
