@@ -46,7 +46,10 @@ public:
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return AbilitySystemComp; }
 
-	TArray<FGameplayAbilitySpecHandle> GrantAbilities(TArray<TSubclassOf<UGameplayAbility>> AbilitiesToGrant);
-	void RevokeAbilities(TArray<FGameplayAbilitySpecHandle> AbilitiesToRevoke);
-	void SendAbilitiesChangeEvent();
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Grant, Give, Ability"))
+		TArray<FGameplayAbilitySpecHandle> GrantAbilities(TArray<TSubclassOf<UGameplayAbility>> AbilitiesToGrant);
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Revoke, Remove,Delete,Clear, Ability"))
+		void RevokeAbilities(TArray<FGameplayAbilitySpecHandle> AbilitiesToRevoke);
+	UFUNCTION(BlueprintCallable, meta = (Keywords = "Send, Event, Ability"))
+		void SendAbilitiesChangeEvent();
 };
