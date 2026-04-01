@@ -18,15 +18,18 @@ public:
 	// Sets default values for this character's properties
 	ABaseGASCharacter();
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Abilities")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attributes|Abilities")
 		UAbilitySystemComponent* AbilitySystemComp;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Abilities")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attributes|Abilities")
 		class UBasicAttributeSet* BasicAttributesSet;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attributes|Abilities")
 		EGameplayEffectReplicationMode ASReplicationMode = EGameplayEffectReplicationMode::Mixed;
 
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attributes|Abilities")
+		TArray<TSubclassOf<UGameplayAbility>> DefaultStartAbilities;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -42,4 +45,8 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return AbilitySystemComp; }
+
+	TArray<FGameplayAbilitySpecHandle> GrantAbilities(TArray<TSubclassOf<UGameplayAbility>> AbilitiesToGrant);
+	void RevokeAbilities(TArray<FGameplayAbilitySpecHandle> AbilitiesToRevoke);
+	void SendAbilitiesChangeEvent();
 };

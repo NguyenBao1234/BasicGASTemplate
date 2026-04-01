@@ -4,7 +4,7 @@
 #include "GameplayAbilitiesSystem/Character/BaseGASCharacter.h"
 
 #include "GameplayAbilitiesSystem/AttributeSet/BasicAttributeSet.h"
-
+#include "AbilitySystemBlueprintLibrary.h"
 // Sets default values
 ABaseGASCharacter::ABaseGASCharacter()
 {
@@ -32,6 +32,7 @@ void ABaseGASCharacter::PossessedBy(AController* NewController)
 	{
 		AbilitySystemComp->InitAbilityActorInfo(this,this);
 	}
+	GrantAbilities(DefaultStartAbilities);
 }
 
 void ABaseGASCharacter::OnRep_PlayerState()
@@ -55,5 +56,40 @@ void ABaseGASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+TArray<FGameplayAbilitySpecHandle> ABaseGASCharacter::GrantAbilities(
+	TArray<TSubclassOf<UGameplayAbility>> AbilitiesToGrant)
+{
+	if (!AbilitySystemComp) return TArray<FGameplayAbilitySpecHandle>();
+	TArray<FGameplayAbilitySpecHandle> GrantedAbilities;
+
+	for (TSubclassOf<UGameplayAbility> AToGrant : AbilitiesToGrant)
+	{
+		auto GAspec = GetAbilitySystemComponent()->GiveAbility(FGameplayAbilitySpec(AToGrant, 1, 0));
+		GrantedAbilities.Add(GAspec);
+	}
+	SendAbilitiesChangeEvent();
+	return GrantedAbilities;
+}
+
+void ABaseGASCharacter::RevokeAbilities(TArray<FGameplayAbilitySpecHandle> AbilitiesToRevoke)
+{
+	if (!AbilitySystemComp) return;
+
+	for (auto AToRevoke : AbilitiesToRevoke)
+	{
+		AbilitySystemComp->ClearAbility(AToRevoke);
+	}
+	SendAbilitiesChangeEvent();
+}
+
+void ABaseGASCharacter::SendAbilitiesChangeEvent()
+{
+	FGameplayEventData EventData;
+	EventData.EventTag = FGameplayTag::RequestGameplayTag(FName("Event.Abilities.Changed"));
+	EventData.Instigator = this;
+	EventData.Target = this;
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, EventData.EventTag, EventData);
 }
 
